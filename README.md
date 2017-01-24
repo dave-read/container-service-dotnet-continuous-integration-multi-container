@@ -13,6 +13,10 @@ docker-compose -f docker-compose.ci.build.yml run ci-build
 
 (On Windows, you currently need to pass the -d flag to docker-compose run and poll the container to determine when it has completed).
 
+```
+docker-compose -f docker-compose.ci.build.yml run -d ci-build
+```
+
 Now build Docker images and run the services:
 
 ```
