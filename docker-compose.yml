@@ -3,6 +3,7 @@ version: "2"
 services:
     service-a:
         build: ./service-a
+        image: service-a
         ports:
             - "8080:80"
         depends_on:
@@ -13,6 +14,7 @@ services:
 
     service-b:
         build: ./service-b
+        image: service-b
         expose:
             - "80"
         labels:

@@ -1,0 +1,36 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: container-lab-web
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: container-lab-web
+    spec:
+      containers:
+        - name: web
+          image: drkube-microsoft.azurecr.io/service-a
+          env:
+            - 
+              name: LISTENPORT
+              value: "8080"
+            -  
+              name: BACKEND_HOSTPORT
+              value: 'localhost:80'
+            -  
+              name: REDIS_HOST
+              value: localhost
+          ports:
+            - containerPort: 8080
+        - name: api
+          image: drkube-microsoft.azurecr.io/service-b
+          ports:
+            - containerPort: 80
+        - name: mycache
+          image: redis
+          ports:
+            - containerPort: 6379
+      imagePullSecrets:
+        - name: dr-acr-reader       

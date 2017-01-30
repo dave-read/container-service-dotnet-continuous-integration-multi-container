@@ -2,9 +2,16 @@ var os = require('os');
 var request = require('request');
 var morgan = require('morgan');
 var express = require('express');
-var redis = connectToCache();
 
 var app = express();
+
+// Use environment variables to allow Pod deployment in k8
+var listenPort = process.env.LISTENPORT || 80;
+var backendHostPort= process.env.BACKEND_HOSTPORT || "service-b:80";
+var redisHost = process.env.REDIS_HOST || "mycache";
+var redis = connectToCache(redisHost);
+
+console.log("[listenPort:"+listenPort+"][backendHostPort:"+backendHostPort+"][redisHost:"+redisHost+"]")
 app.use(express.static(__dirname + '/public'));
 app.use(morgan("dev"));
 
@@ -16,27 +23,27 @@ app.get('/', function (req, res) {
 // api ------------------------------------------------------------
 app.get('/api', function (req, res) {
     // Increment requestCount each time API is called
-    if (!redis) { redis = connectToCache(); }
+    if (!redis) { redis = connectToCache(redisHost); }
     redis.incr('requestCount', function (err, reply) {
         var requestCount = reply;
     });
 
     // Invoke service-b
-    request('http://service-b', function (error, response, body) {
+    request('http://'+backendHostPort, function (error, response, body) {
         res.send('Hello from service A running on ' + os.hostname() + ' and ' + body);
     });
 });
 
 app.get('/metrics', function (req, res) {
-    if (!redis) { redis = connectToCache(); }
+    if (!redis) { redis = connectToCache(redisHost); }
     redis.get('requestCount', function (err, reply) {
         res.send({ requestCount: reply });
     });
 });
 
-var port = 80;
-var server = app.listen(port, function () {
-    console.log('Listening on port ' + port);
+
+var server = app.listen(listenPort, function () {
+    console.log('Listening on port ' + listenPort);
 });
 
 process.on("SIGINT", () => {
@@ -48,7 +55,7 @@ process.on("SIGTERM", () => {
     server.close();
 });
 
-function connectToCache() {
-    var redis = require('redis').createClient("redis://mycache");
+function connectToCache(redisHost) {
+    var redis = require('redis').createClient("redis://"+redisHost);
     return redis;
 }
