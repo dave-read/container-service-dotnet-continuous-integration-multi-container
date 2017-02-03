@@ -109,7 +109,7 @@ az ad sp create-for-rbac --name my-acr-contributor  --role Contributor --passwor
 ### Push demo app images to ACR
 List the local docker images.  You should see the images built in the initial steps when deploying the application locally.
 ```
-docker docker images
+docker images
 ```
 
 Tag the images for service-a and service-b to associate them with the private ACR instance
