@@ -27,6 +27,17 @@ The frontend service (service-a) will be available at http://localhost:8080.
 
 ## Kubernetes (k8) deployment
 
+[Toc]
+- [Create k8 cluster](#create-k8-cluster)
+- [Install the kubectl command line](#install-the-kubectl-command-line)
+- [Get the k8 cluster configuration](#get-the-k8-cluster-configuration (including credentials))
+- [Verify cluster operation and connectivity](#deploying-a-pod-and-service-from-a-public-repository)
+- [Create Azure Container Service Repository](#create-azure-container-service-repository (ACR))
+- [Push demo app images to ACR](#push-demo-app-images-to-acr)
+- [Enable access to ACR from k8](#create-a-k8-docker-repository-secret-to-enable-read-only-access-to-ACR)
+- [Deploy the sample app to k8](#deploy-the-application-to-the-k8-cluster)
+
+
 ### Create k8 cluster
 You can create a cluster through CLI v2 or the Azure Portal.  If you use the 
 portal you will need to have created and provide a SSH key and Service Principal. 
@@ -132,9 +143,14 @@ docker push myk8acr-microsoft.azurecr.io/service-b
 At this point the images are in ACR, but the k8 cluster will need credentails to be able to pull and deploy the images
 
 ### Create a k8 docker-repository secret to enable read-only access to ACR
+
 ```
 kubectl create secret docker-registry acr-reader --docker-server=myk8acr-microsoft.azurecr.io --docker-username=ContributorAppId --docker-password=my-acr-password --docker-email=a@b.com
 ```
+After creating the secret, update the deployment manifest to reference the secret
+
+    imagePullSecrets:
+        - name: acr-reader
 
 ### Deploy the application to the k8 cluster
 ```
