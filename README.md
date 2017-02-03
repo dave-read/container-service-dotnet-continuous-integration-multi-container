@@ -86,6 +86,12 @@ kubectl get pods
 kubectl expose deployments nginx --port=80 --type=LoadBalancer
 kubectl get services
 ```
+You can also enable access to the k8 web UI console via local proxy
+
+```
+kubectl proxy
+```
+The output will not the port that the proxy binds to.  The console will then be available at that port on localhost.  e.g. <http://localhost:8001/ui>
 
 ### Create Azure Container Service Repository (ACR)
 In the previous step the image for ngnix was pulled from a public repository.  For  many customers they want to only deploy images from internal (controlled) private
@@ -152,6 +158,13 @@ After creating the secret, update the deployment manifest to reference the secre
         - name: acr-reader
 
 ### Deploy the application to the k8 cluster
+Review the contents of the k8-demo-app.yml file.  
+
+- It contains the objects to be created on the k8 cluster.  
+  - Note that multple objects can be included within the same file
+- Note the environment variables that are used to configure endpoints.  Since these containers are being deployed to a Pod:
+  - The containers will communicate via localhost
+  - Containers cannot listen on the same port 
 ```
 kubectl create -f k8-demo-app.yml
 ```
