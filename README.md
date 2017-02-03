@@ -27,7 +27,6 @@ The frontend service (service-a) will be available at http://localhost:8080.
 
 ## Kubernetes (k8) deployment
 
-[Toc]
 - [Create k8 cluster](#create-k8-cluster)
 - [Install the kubectl command line](#install-the-kubectl-command-line)
 - [Get the k8 cluster configuration](#get-the-k8-cluster-configuration (including credentials))
