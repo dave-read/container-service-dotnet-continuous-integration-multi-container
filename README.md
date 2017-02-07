@@ -184,7 +184,7 @@ kubectl create secret generic oms-agent-secret --from-literal=WSID=<WorkspaceID>
 
 Note two points in the file k8-demo-enable-oms.yml
 - The deployment type is `DaemonSet` which means one instance will be deployed to each agent Node
-- The reference to the secrete created in the prior step to hold the OMS WorkspaceID and WorkspaceKey 
+- The reference to the secret created in the prior step to hold the OMS WorkspaceID and WorkspaceKey 
 
 Deploy the agent with the following command
 ```
