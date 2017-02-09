@@ -135,9 +135,12 @@ docker tag service-a:latest myk8acr-microsoft.azurecr.io/service-a:latest
 docker tag service-b:latest myk8acr-microsoft.azurecr.io/service-b:latest
 ```
 
-Using the Contributor Service Principal, log into the ACR
+Using the Contributor Service Principal, log into the ACR.  The login command for a remote registry has the form:
+
+docker login -u user -p password server
+
 ```
-docker login -u ContributorAppId  -p my-acr-password  
+docker login -u <ContributorAppId>  -p <my-acr-password> <myk8acr-microsoft.azurecr.io> 
 ```
 
 Push the images
