@@ -55,7 +55,7 @@ new keys which will overrite any existing keys in your home/.ssh directory._
 ```
 az login
 az group create --name my-k8-clusters --location westus
-az acs create --name my-k8-cluster --resource-group my-k8-clusters --orchestrator-type Kubernetes --dns-prefix my-k8 --generate-ssh-keys 
+az acs create --name my-k8-cluster --resource-group my-k8-clusters --orchestrator-type Kubernetes --dns-prefix <my-k8> --generate-ssh-keys 
 ```
 ### Install the kubectl command line
 If not already installed, you can use the cli to install the k8 command line utility (kubectl).
@@ -92,7 +92,7 @@ You can also enable access to the k8 web UI console via local proxy
 ```
 kubectl proxy
 ```
-The output will not the port that the proxy binds to.  The console will then be available at that port on localhost.  e.g. <http://localhost:8001/ui>
+The output will note the port that the proxy binds to.  The console will then be available at that port on localhost.  e.g. <http://localhost:8001/ui>
 
 ### Create Azure Container Service Repository (ACR)
 In the previous step the image for ngnix was pulled from a public repository.  For  many customers they want to only deploy images from internal (controlled) private
@@ -100,7 +100,7 @@ registries.
 
 Note: ACR names are globally scoped so you can check the name of a regsitry before trying to create it
 ```
-az acr check-name --name myk8acr
+az acr check-name --name <myk8acr>
 ```
 The minimal parameters to create a ACR are a name, resource group and location.  With these 
 paramters a storage account will be created and administrator access will not be created.
@@ -109,12 +109,13 @@ Note: the command will return the resource id for the registry.  That id will ne
 to this registry instance.
 
 ```
-az acr create --name myk8acr --resource-group my-k8-clusters --location westus
+az acr create --name <myk8acr> --resource-group my-k8-clusters --location westus
 ```
 
 Create a two service principals, one with read only and one with read/write access.
 
 Note: 
+- Ensure that the password length is 8 or more characters
 - The command will return an application id for each service principal.  You'll need that id in subsequent steps.
 - You should consider using the --scope property to qualify the use of the service principal a resource group or registry
 
@@ -129,13 +130,16 @@ List the local docker images.  You should see the images built in the initial st
 docker images
 ```
 
-Tag the images for service-a and service-b to associate them with the private ACR instance
+Tag the images for service-a and service-b to associate them with you private ACR instance.  
+
+Note that you must provide your ACR registry endpoint
+
 ```
-docker tag service-a:latest myk8acr-microsoft.azurecr.io/service-a:latest
-docker tag service-b:latest myk8acr-microsoft.azurecr.io/service-b:latest
+docker tag service-a:latest <myk8acr-microsoft.azurecr.io>/service-a:latest
+docker tag service-b:latest <myk8acr-microsoft.azurecr.io>/service-b:latest
 ```
 
-Using the Contributor Service Principal, log into the ACR.  The login command for a remote registry has the form:
+Using the *Contributor* Service Principal, log into the ACR.  The login command for a remote registry has the form:
 
 docker login -u user -p password server
 
@@ -145,8 +149,8 @@ docker login -u <ContributorAppId>  -p <my-acr-password> <myk8acr-microsoft.azur
 
 Push the images
 ```
-docker push myk8acr-microsoft.azurecr.io/service-a
-docker push myk8acr-microsoft.azurecr.io/service-b
+docker push <myk8acr-microsoft.azurecr.io>/service-a
+docker push <myk8acr-microsoft.azurecr.io>/service-b
 ```
 
 At this point the images are in ACR, but the k8 cluster will need credentails to be able to pull and deploy the images
@@ -154,12 +158,15 @@ At this point the images are in ACR, but the k8 cluster will need credentails to
 ### Create a k8 docker-repository secret to enable read-only access to ACR
 
 ```
-kubectl create secret docker-registry acr-reader --docker-server=myk8acr-microsoft.azurecr.io --docker-username=ContributorAppId --docker-password=my-acr-password --docker-email=a@b.com
+kubectl create secret docker-registry acr-reader --docker-server=<myk8acr-microsoft.azurecr.io> --docker-username=<ContributorAppId> --docker-password=my-acr-password --docker-email=a@b.com
 ```
-After creating the secret, update the deployment manifest to reference the secret
 
+Note: If you use a different name for the secret you will have to update the imagePullSecrets name property in the k8-demo-app.yml file 
+
+```
     imagePullSecrets:
         - name: acr-reader
+```
 
 ### Deploy the application to the k8 cluster
 Review the contents of the k8-demo-app.yml file.  
@@ -168,7 +175,22 @@ Review the contents of the k8-demo-app.yml file.
   - Note that multple objects can be included within the same file
 - Note the environment variables that are used to configure endpoints.  Since these containers are being deployed to a Pod:
   - The containers will communicate via localhost
-  - Containers cannot listen on the same port 
+  - Containers cannot listen on the same port
+- Update the `image` refereinces in the k8-demo-app.yml file to reference your ACR endpoint
+
+
+    spec:
+      containers:
+        - name: web
+          image: <myk8acr-microsoft.azurecr.io>/service-a
+          ...
+        - name: api
+          image: <myk8acr-microsoft.azurecr.io>/service-b
+          ...
+        - name: mycache  
+        
+Deploy the application using the kubectl create command
+
 ```
 kubectl create -f k8-demo-app.yml
 ```
