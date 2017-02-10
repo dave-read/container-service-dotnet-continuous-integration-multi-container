@@ -36,6 +36,7 @@ The frontend service (service-a) will be available at http://localhost:8080.
 - [Enable access to ACR from k8](#create-a-k8-docker-repository-secret-to-enable-read-only-access-to-ACR)
 - [Deploy the sample app to k8](#deploy-the-application-to-the-k8-cluster)
 - [Enable OMS monitoring of containers](#enable-oms-monitoring-of-containers)
+- [Create and deploy into namspaces](#create-and-deploy-into-namspaces)
 
 ---
 Note: a number of resources created in this demo have names that must be globally unique (e.g. ACR endpoints).  In those cases the commands will include a placeholder value 
@@ -223,5 +224,32 @@ kubectl create -f k8-demo-enable-oms.yml
 ```
 
 Within a few minutes you should see metrics and logs for containers deployed in the k8 cluster.
+
+### Create and deploy into namspaces
+Kubernetes provides namespaces as a way to create isolated environments within a cluster (e.g. dev,test,prod)
+
+Create a `test` and `prod` namespace using the kubectl create command
+```
+kubectl create -f k8-create-namespaces.yml
+```
+
+Use the UI or command line to verify the available namespaces now include `test` and `prod`
+```
+kubectl get namespaces
+```
+Deploy the demo application into the `test` namespace
+- Get a list of the current contexts
+- Create a context named `test` and bind it to the test namespace
+- Set the current context to `test`
+- Show the current context again and note that `test` is tagged as CURRENT
+- Deploy the application into the `test` namespace
+
+```
+kubectl config get-contexts
+kubectl config set-context test --cluster=<my-k8-cluster> --user=<my-k8-cluster-admin> --namespace=test 
+kubectl config use-context test
+kubectl config get-contexts
+kubectl create -f k8-demo-app.yml
+```
 
 
