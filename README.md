@@ -78,7 +78,7 @@ your machine using the get-credential subcommand.
 ```
 az acs kubernetes get-credentials --resource-group=my-k8-clusters --name=my-k8-cluster
 ```
-After downloading the cluster configuration you should be able to connect to the cluster using kubectl.  For example the cluster-info command will show details about your cluster.
+After downloading the cluster configuration you should be able to connect to the cluster using kubectl.  For example the cluster-info command will show the master and cluster services for your cluster.
 ```
 kubectl cluster-info
 ```
@@ -93,7 +93,8 @@ kubectl get pods
 kubectl expose deployments nginx --port=80 --type=LoadBalancer
 kubectl get services
 ```
-You can also enable access to the k8 web UI console via local proxy
+The default ACS deployment enables management access only through ssh.  You can enable admin access to the k8 web UI console by creating
+a ssh tunnel or by using the `kubectl proxy` command to create the tunnel for you.
 
 ```
 kubectl proxy
