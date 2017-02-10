@@ -37,6 +37,11 @@ The frontend service (service-a) will be available at http://localhost:8080.
 - [Deploy the sample app to k8](#deploy-the-application-to-the-k8-cluster)
 - [Enable OMS monitoring of containers](#enable-oms-monitoring-of-containers)
 
+---
+Note: a number of resources created in this demo have names that must be globally unique (e.g. ACR endpoints).  In those cases the commands will include a placeholder value 
+noted within angle brackets `<>` to signal that a value specific to your environment needs to be provided.
+
+---
 
 ### Create k8 cluster
 You can create a cluster through CLI v2 or the Azure Portal.  If you use the 
@@ -176,9 +181,9 @@ Review the contents of the k8-demo-app.yml file.
 - Note the environment variables that are used to configure endpoints.  Since these containers are being deployed to a Pod:
   - The containers will communicate via localhost
   - Containers cannot listen on the same port
-- Update the `image` refereinces in the k8-demo-app.yml file to reference your ACR endpoint
+- Update the `image` references in the k8-demo-app.yml file to reference your ACR endpoint
 
-
+```
     spec:
       containers:
         - name: web
@@ -188,7 +193,8 @@ Review the contents of the k8-demo-app.yml file.
           image: <myk8acr-microsoft.azurecr.io>/service-b
           ...
         - name: mycache  
-        
+```
+
 Deploy the application using the kubectl create command
 
 ```
