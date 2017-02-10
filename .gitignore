@@ -3,5 +3,5 @@ project.lock.json
 [Oo]bj/
 .DS_Store
 *.txt
-.kube
+.kube/
 *.cmd
