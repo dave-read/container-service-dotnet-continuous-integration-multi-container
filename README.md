@@ -243,6 +243,7 @@ Deploy the demo application into the `test` namespace
 - Create a context named `test` and bind it to the test namespace
 - Set the current context to `test`
 - Show the current context again and note that `test` is tagged as CURRENT
+- Create a registry secret in the `test` namespace
 - Deploy the application into the `test` namespace
 
 ```
@@ -250,6 +251,7 @@ kubectl config get-contexts
 kubectl config set-context test --cluster=<my-k8-cluster> --user=<my-k8-cluster-admin> --namespace=test 
 kubectl config use-context test
 kubectl config get-contexts
+kubectl create secret docker-registry acr-reader --docker-server=<myk8acr-microsoft.azurecr.io> --docker-username=<ContributorAppId> --docker-password=my-acr-password --docker-email=a@b.com
 kubectl create -f k8-demo-app.yml
 ```
 
