@@ -30,7 +30,7 @@ The frontend service (service-a) will be available at http://localhost:8080.
 
 - [Create k8 cluster](#create-k8-cluster)
 - [Install the kubectl command line](#install-the-kubectl-command-line)
-- [Get the k8 cluster configuration](#get-the-k8-cluster-configuration (including credentials))
+- [Get the k8 cluster configuration](#get-the-k8-cluster-configuration)
 - [Verify cluster operation and connectivity](#deploying-a-pod-and-service-from-a-public-repository)
 - [Create Azure Container Service Repository](#create-azure-container-service-repository (ACR))
 - [Push demo app images to ACR](#push-demo-app-images-to-acr)
@@ -73,13 +73,19 @@ Note:
 ```
 az acs kubernetes install-cli
 ```
-### **Get the k8 cluster configuration (including credentials)**
-The kubectl application requires configuration data which includes the cluster endpoint and credentails.  
-The credentails are created on the cluster admin server during installation and can be downloaded to
-your machine using the get-credential subcommand.
+### **Get the k8 cluster configuration**
+The kubectl application requires configuration data which includes the cluster endpoint and credentails. The default location/name for the file is:`~/.kube/config`
+
+The credentails and configuration data are created on the cluster admin server during installation and can be downloaded to
+your machine using the `get-credential` subcommand.  
+
+
 ```
 az acs kubernetes get-credentials --resource-group=my-k8-clusters --name=my-k8-cluster
 ```
+_If you have difficulty using the CLI to get the configuration,  you can use ssh/scp to download the file from the ~/.kube/config on the cluster master._
+
+
 After downloading the cluster configuration you should be able to connect to the cluster using kubectl.  For example the cluster-info command will show the master and cluster services for your cluster.
 ```
 kubectl cluster-info

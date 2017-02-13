@@ -37,5 +37,5 @@ az container release create \
  --vsts-project-name $clusterName \
  --remote-access-token $gitHubKey
 
- # onece the cluster is running you can use the browse sub-command to create a proxy to the cluster
+ # Once the cluster is running you can use the browse sub-command to create a proxy to the cluster
  # az acs dcos browse -g acs-dcos-demo -n acs-dcos-demo
