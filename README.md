@@ -32,9 +32,9 @@ The frontend service (service-a) will be available at http://localhost:8080.
 - [Install the kubectl command line](#install-the-kubectl-command-line)
 - [Get the k8 cluster configuration](#get-the-k8-cluster-configuration)
 - [Verify cluster operation and connectivity](#deploying-a-pod-and-service-from-a-public-repository)
-- [Create Azure Container Service Repository](#create-azure-container-service-repository (ACR))
+- [Create Azure Container Registry (ACR)](#create-azure-container-registry)
 - [Push demo app images to ACR](#push-demo-app-images-to-acr)
-- [Enable access to ACR from k8](#create-a-k8-docker-repository-secret-to-enable-read-only-access-to-ACR)
+- [Enable access to ACR from k8](#create-a-k8-docker-registry-secret-to-enable-read-only-access-to-acr)
 - [Deploy the sample app to k8](#deploy-the-application-to-the-k8-cluster)
 - [Enable OMS monitoring of containers](#enable-oms-monitoring-of-containers)
 - [Create and deploy into namspaces](#create-and-deploy-into-namspaces)
@@ -111,7 +111,7 @@ kubectl proxy
 ```
 The output will note the port that the proxy binds to.  The console will then be available at that port on localhost.  e.g. <http://localhost:8001/ui>
 
-### **Create Azure Container Service Repository (ACR)**
+### **Create Azure Container Registry**
 In the previous step the image for ngnix was pulled from a public repository.  For  many customers they want to only deploy images from internal (controlled) private
 registries. 
 
@@ -172,7 +172,7 @@ docker push <myk8acr-microsoft.azurecr.io>/service-b
 
 At this point the images are in ACR, but the k8 cluster will need credentails to be able to pull and deploy the images
 
-### **Create a k8 docker-repository secret to enable read-only access to ACR**
+### **Create a k8 docker-registry secret to enable read-only access to ACR**
 
 ```
 kubectl create secret docker-registry acr-reader --docker-server=<myk8acr-microsoft.azurecr.io> --docker-username=<ContributorAppId> --docker-password=my-acr-password --docker-email=a@b.com
