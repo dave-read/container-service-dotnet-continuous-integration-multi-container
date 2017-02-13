@@ -4,7 +4,7 @@ This repository contains a sample Azure multi-container Docker application.
 * service-a: Angular.js sample application with Node.js backend 
 * service-b: ASP .NET Core sample service
 
-## Run application locally
+## **Run application locally**
 First, compile the ASP .NET Core application code. This uses a container to isolate build dependencies that is also used by VSTS for continuous integration:
 
 ```
@@ -25,7 +25,7 @@ docker-compose up --build
 
 The frontend service (service-a) will be available at http://localhost:8080.
 
-## Kubernetes (k8) deployment
+## **Kubernetes (k8) deployment**
 
 - [Create k8 cluster](#create-k8-cluster)
 - [Install the kubectl command line](#install-the-kubectl-command-line)
@@ -39,12 +39,13 @@ The frontend service (service-a) will be available at http://localhost:8080.
 - [Create and deploy into namspaces](#create-and-deploy-into-namspaces)
 
 ---
-Note: a number of resources created in this demo have names that must be globally unique (e.g. ACR endpoints).  In those cases the commands will include a placeholder value 
-noted within angle brackets `<>` to signal that a value specific to your environment needs to be provided.
+**Important Notes:** 
+ - This lab assumes use of the [Azure CLI v2](https://github.com/Azure/azure-cli)
+ - A number of resources created in this demo have names that must be globally unique (e.g. ACR endpoints).  In those cases the commands will include a placeholder value noted within angle brackets `<>` to signal that a value specific to your environment needs to be provided.
 
 ---
 
-### Create k8 cluster
+### **Create k8 cluster**
 You can create a cluster through CLI v2 or the Azure Portal.  If you use the 
 portal you will need to have created and provide a SSH key and Service Principal. 
 If you use the command line you can have the SSH key and Service Principal 
@@ -63,7 +64,7 @@ az login
 az group create --name my-k8-clusters --location westus
 az acs create --name my-k8-cluster --resource-group my-k8-clusters --orchestrator-type Kubernetes --dns-prefix <my-k8> --generate-ssh-keys 
 ```
-### Install the kubectl command line
+### **Install the kubectl command line**
 If not already installed, you can use the cli to install the k8 command line utility (kubectl).
 Note:
 - On Windows you need to have opened the command windows with Administrator rights as the installation tries write the program to C:\Program Files\kubectl.exe
@@ -71,7 +72,7 @@ Note:
 ```
 az acs kubernetes install-cli
 ```
-### Get the k8 cluster configuration (including credentials)
+### **Get the k8 cluster configuration (including credentials)**
 The kubectl application requires configuration data which includes the cluster endpoint and credentails.  
 The credentails are created on the cluster admin server during installation and can be downloaded to
 your machine using the get-credential subcommand.
@@ -82,7 +83,7 @@ After downloading the cluster configuration you should be able to connect to the
 ```
 kubectl cluster-info
 ```
-### Deploying a Pod and Service from a public repository
+### **Deploying a Pod and Service from a public repository**
 The following steps can be used to quickly deploy an image from DockerHub (a public repository) that is made available via Azure external load balancer.  
 The `kubectl get services` command will show the EXTERNAL-IP as 'Pending' until a public IP is provisioned for the service on the load balancer.  Once the EXTERNAL-IP
 is assigned you can use that IP to render the nginx landing page.
@@ -101,7 +102,7 @@ kubectl proxy
 ```
 The output will note the port that the proxy binds to.  The console will then be available at that port on localhost.  e.g. <http://localhost:8001/ui>
 
-### Create Azure Container Service Repository (ACR)
+### **Create Azure Container Service Repository (ACR)**
 In the previous step the image for ngnix was pulled from a public repository.  For  many customers they want to only deploy images from internal (controlled) private
 registries. 
 
@@ -131,7 +132,7 @@ az ad sp create-for-rbac --name my-acr-reader --role Reader --password my-acr-pa
 az ad sp create-for-rbac --name my-acr-contributor  --role Contributor --password my-acr-password
 ```
 
-### Push demo app images to ACR
+### **Push demo app images to ACR**
 List the local docker images.  You should see the images built in the initial steps when deploying the application locally.
 ```
 docker images
@@ -162,7 +163,7 @@ docker push <myk8acr-microsoft.azurecr.io>/service-b
 
 At this point the images are in ACR, but the k8 cluster will need credentails to be able to pull and deploy the images
 
-### Create a k8 docker-repository secret to enable read-only access to ACR
+### **Create a k8 docker-repository secret to enable read-only access to ACR**
 
 ```
 kubectl create secret docker-registry acr-reader --docker-server=<myk8acr-microsoft.azurecr.io> --docker-username=<ContributorAppId> --docker-password=my-acr-password --docker-email=a@b.com
@@ -175,7 +176,7 @@ Note: If you use a different name for the secret you will have to update the ima
         - name: acr-reader
 ```
 
-### Deploy the application to the k8 cluster
+### **Deploy the application to the k8 cluster**
 Review the contents of the k8-demo-app.yml file.  
 
 - It contains the objects to be created on the k8 cluster.  
@@ -203,7 +204,7 @@ Deploy the application using the kubectl create command
 kubectl create -f k8-demo-app.yml
 ```
  
-### Enable OMS monitoring of containers
+### **Enable OMS monitoring of containers**
 This expands on the steps described here <https://docs.microsoft.com/en-us/azure/container-service/container-service-kubernetes-oms>
 by using a k8 secret to store the workspace id and key.
 
@@ -226,7 +227,7 @@ kubectl create -f k8-demo-enable-oms.yml
 
 Within a few minutes you should see metrics and logs for containers deployed in the k8 cluster.
 
-### Create and deploy into namspaces
+### **Create and deploy into namspaces**
 Kubernetes provides namespaces as a way to create isolated environments within a cluster (e.g. dev,test,prod)
 
 Create a `test` and `prod` namespace using the kubectl create command
