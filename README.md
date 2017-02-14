@@ -169,6 +169,14 @@ Push the images
 docker push <myk8acr-microsoft.azurecr.io>/service-a
 docker push <myk8acr-microsoft.azurecr.io>/service-b
 ```
+You can list the repositories in a registry and the tags in a repository with the following command.
+
+_Note that credentials are not needed if you enabled the Administrator login._
+
+```
+az acr repository list -n <myRegistry> [-u myUsername -p myPassword]
+az acr repository show-tags -n <myRegistry> --repository <myRepository> [-u myUsername -p myPassword]
+```
 
 At this point the images are in ACR, but the k8 cluster will need credentails to be able to pull and deploy the images
 
